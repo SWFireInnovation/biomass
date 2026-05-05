@@ -1,0 +1,5 @@
+data_path: c:\Users\me\my_tree_data.xlsx
+units:
+    DBH/DRC: cm
+    Height: m
+    Lowest Canopy Height: m

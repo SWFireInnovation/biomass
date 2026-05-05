@@ -8,11 +8,15 @@ import pandas as pd
 import pint_pandas
 import pint
 
+# unify the units registry so that we can check units
+ureg = pint.UnitRegistry()
+pint_pandas.PintType.ureg = ureg
+
 
 class UnitsMngr:
     """
     units:
-        in:
+        input:
             DBH: cm
             HT: m
         out:
@@ -26,17 +30,26 @@ class UnitsMngr:
         self.df = df
         self.units = units
 
-    def has_unit(self, series):
-        return hasattr(series.dtype, 'unit') and series.dtype.units is not None
+    def has_units(self, series):
+        return hasattr(series.dtype, 'units') and series.dtype.units is not None
+
+    def has_same_unit(self, series, target_unit):
+        return series.dtype.units == ureg.Unit(target_unit)
 
     def set_unit(self, col, unit):
         self.df[col] = self.df[col].astype(f'pint[{unit}]')
 
+    def convert_unit(self, col, unit):
+        return self.df[col].pint.to(unit)
+
     def check_df_units(self, workflow):
 
         for col, unit in self.units[workflow].items():
-            if not self.has_unit(self.df[col]):
+            series = self.df[col]
+            if not self.has_units(series):
                 self.set_unit(col, unit)
+            elif not self.has_same_unit(series, unit):
+                self.df[col] = self.convert_unit(col, unit)
 
 
 class LoadData(UnitsMngr):
@@ -72,6 +85,7 @@ class LoadData(UnitsMngr):
             self.df = pd.read_excel(filename)
 
         self.check_req_columns(self.required_columns)
+        self.check_df_units('input')
 
     def check_req_columns(self, required_columns):
         has_cols, rename_cols = self.find_req_column(required_columns)

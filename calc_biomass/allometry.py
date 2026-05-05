@@ -82,7 +82,13 @@ class OakWoodland_Chojnacky:
     def __init__(self, trees, units):
         self.trees = trees
         self.units = units
-        self.units['equ'] = 'metric'
+        self.units['equ'] = {'DBH':'cm',
+                             'HT':'m',
+                             'weight': 'kg',}
+        self.required_columns = {'DBH':{'alternate':['drc'],
+                                         'exclude':['circumfrence', 'circumference']},
+                                 'HT':{'alternate':['height'],
+                                       'exclude':['canopy', 'base', 'lowest']}}
 
     def eq_VOLUME_branchdiam(self):
         """
@@ -160,7 +166,7 @@ class OakWoodland_Chojnacky:
         return wght_bd
         '''
         # slicing by species requires a species column!
-        spp_vol_bd = pd.DataFrame({'spp':self.trees['spp'], 'vol_bd':vol_bd})
+        spp_vol_bd = pd.DataFrame({'spp_eq':self.trees['spp_eq'], 'vol_bd':vol_bd})
         return _vect_by_spp(spp_vol_bd, spp_sg, self._eq_WEIGHT_branchdiam)
 
     def _eq_wght_crwn(self, wght_bd, coefs):
@@ -241,6 +247,11 @@ class PJ_Grier:
         self.trees = trees
         self.units = units
         self.units['equ'] = 'metric'
+        self.units['equ'] = {'DBH':'cm',
+                             'weight': 'kg',}
+        self.required_columns = {'DBH':{'alternate':['drc'],
+                                         'exclude':['circumfrence', 'circumference']}
+                                 }
 
     @staticmethod
     def eq_weight(DRC, coef):
@@ -352,8 +363,13 @@ class BCtimber_Standish:
         self.trees = trees
         self.units = units
         self.units['equ'] = {'HT': 'meters',
-                             'DBH':'meters'
+                             'DBH':'meters',
+                             'weight': 'Kg'
                              }
+        self.required_columns = {'DBH':{'alternate':['drc'],
+                                         'exclude':['circumfrence', 'circumference']},
+                                 'HT':{'alternate':['height'],
+                                       'exclude':['canopy', 'base', 'lowest']}}
 
         self.vol = None
 

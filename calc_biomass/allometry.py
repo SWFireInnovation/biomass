@@ -4,8 +4,6 @@ __version__ = "0.0"
 
 import numpy as np
 import pandas as pd
-import pint_pandas
-
 
 def _vect_by_spp(trees, spp_coef, equ):
     """
@@ -23,43 +21,10 @@ def _vect_by_spp(trees, spp_coef, equ):
     out = np.zeros(len(trees))
 
     for spp, coef in spp_coef.items():
-        this_spp = trees['spp'] == spp
+        this_spp = trees['spp_eq'] == spp
         out[this_spp] = equ(trees[this_spp], coef)
 
     return out
-
-class UnitsMngr:
-    """
-    units:
-        in:
-            DBH: cm
-            HT: m
-        out:
-            weight: kg
-        equ:
-            DBH: in
-            HT: ft
-            weight: lbs
-    """
-    def __init__(self, df, units):
-        self.df = df
-        self.units = units
-
-    def has_unit(self, series):
-        return hasattr(series.dtype, 'unit') and series.dtype.units is not None
-
-    def set_unit(self, col, unit):
-        self.df[col] = self.df[col].astype(f'pint[{unit}]')
-
-    def check_df_units(self, workflow):
-
-        for col, unit in self.units[workflow].items():
-            if not self.has_unit(self.df[col]):
-                self.set_unit(col, unit)
-            else:
-                pass
-
-            self.df[col] = self.units[workflow][col]
 
 class OakWoodland_Chojnacky:
     """
@@ -79,16 +44,17 @@ class OakWoodland_Chojnacky:
     Q. hypoleucoides; Q. oblongifolia, Q. ilex.
 
     """
-    def __init__(self, trees, units):
-        self.trees = trees
-        self.units = units
-        self.units['equ'] = {'DBH':'cm',
-                             'HT':'m',
-                             'weight': 'kg',}
-        self.required_columns = {'DBH':{'alternate':['drc'],
-                                         'exclude':['circumfrence', 'circumference']},
-                                 'HT':{'alternate':['height'],
-                                       'exclude':['canopy', 'base', 'lowest']}}
+    units = {'equ':{'DBH': 'cm',
+                    'HT':'m'},
+            'out':{'weight': 'kg'}
+            }
+    required_columns = {'DBH': {'alternate': ['drc'],
+                                'exclude': ['circumfrence', 'circumference']},
+                         'HT':{'alternate':['height'],
+                               'exclude':['canopy', 'base', 'lowest']}
+                        }
+    def __init__(self, trees):
+        self.trees = trees.fillna(0)
 
     def eq_VOLUME_branchdiam(self):
         """
@@ -243,15 +209,15 @@ class PJ_Grier:
     Grier, C.C., Elliott, K.J., McCullough, D.G. 1992. Biomass distribution and productivity of Pinus edulis-Juniperus
     monosperma woodlands of north-central Arizona. Forest Ecology and Management, 50:331-350.
     """
-    def __init__(self, trees, units):
+    units = {'equ':{'DBH': 'cm'},
+            'out':{'weight': 'kg'}
+            }
+    required_columns = {'DBH': {'alternate': ['drc'],
+                                'exclude': ['circumfrence', 'circumference']}
+                             }
+
+    def __init__(self, trees):
         self.trees = trees
-        self.units = units
-        self.units['equ'] = 'metric'
-        self.units['equ'] = {'DBH':'cm',
-                             'weight': 'kg',}
-        self.required_columns = {'DBH':{'alternate':['drc'],
-                                         'exclude':['circumfrence', 'circumference']}
-                                 }
 
     @staticmethod
     def eq_weight(DRC, coef):
@@ -359,17 +325,19 @@ class BCtimber_Standish:
     Susan Watts eds. 1983. Forestry Handbook for British Columbia, 4th Edition. University of British Columbia. Forest
     Club.
     """
-    def __init__(self, trees, units):
+    units = {'equ':{
+                    'HT': 'meters',
+                    'DBH': 'meters'
+                    },
+            'out':{'weight': 'kg'}
+            }
+    required_columns = {'DBH': {'alternate': ['drc'],
+                                'exclude': ['circumfrence', 'circumference']},
+                         'HT': {'alternate': ['height'],
+                                'exclude': ['canopy', 'base', 'lowest']}}
+
+    def __init__(self, trees):
         self.trees = trees
-        self.units = units
-        self.units['equ'] = {'HT': 'meters',
-                             'DBH':'meters',
-                             'weight': 'Kg'
-                             }
-        self.required_columns = {'DBH':{'alternate':['drc'],
-                                         'exclude':['circumfrence', 'circumference']},
-                                 'HT':{'alternate':['height'],
-                                       'exclude':['canopy', 'base', 'lowest']}}
 
         self.vol = None
 
@@ -493,7 +461,7 @@ class BCtimber_Standish:
         if self.vol is None:
             self.set_vol()
 
-        tree = self.trees.loc[:, ['DBH', 'HT', 'spp']]
+        tree = self.trees.loc[:, ['DBH', 'HT', 'spp_eq']]
         tree['vol'] = self.vol
 
         return _vect_by_spp(tree, coef, self.equ_weight)
@@ -529,7 +497,7 @@ class BCtimber_Standish:
         if self.vol is None:
             self.set_vol()
 
-        tree = self.trees.loc[:, ['DBH', 'HT', 'spp']]
+        tree = self.trees.loc[:, ['DBH', 'HT', 'spp_eq']]
         tree['vol'] = self.vol
 
         return _vect_by_spp(tree, coef, self.equ_weight)
@@ -565,7 +533,7 @@ class BCtimber_Standish:
         if self.vol is None:
             self.set_vol()
 
-        tree = self.trees.loc[:, ['DBH', 'HT', 'spp']]
+        tree = self.trees.loc[:, ['DBH', 'HT', 'spp_eq']]
         tree['vol'] = self.vol
 
         return _vect_by_spp(tree, coef, self.equ_weight)

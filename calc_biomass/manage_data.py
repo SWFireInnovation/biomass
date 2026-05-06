@@ -7,6 +7,7 @@ import yaml
 import pandas as pd
 import pint_pandas
 import pint
+from calc_biomass import allometry
 
 # unify the units registry so that we can check units
 ureg = pint.UnitRegistry()
@@ -36,26 +37,38 @@ class UnitsMngr:
     def has_same_unit(self, series, target_unit):
         return series.dtype.units == ureg.Unit(target_unit)
 
-    def set_unit(self, col, unit):
-        self.df[col] = self.df[col].astype(f'pint[{unit}]')
+    def assign_unit(self, col, unit):
+        return self.df[col].astype(f'pint[{unit}]')
 
     def convert_unit(self, col, unit):
         return self.df[col].pint.to(unit)
 
-    def check_df_units(self, workflow):
+    def get_df_units(self, workflow):
 
+        df = pd.DataFrame(index=self.df.index)
         for col, unit in self.units[workflow].items():
             series = self.df[col]
             if not self.has_units(series):
-                self.set_unit(col, unit)
+                df[col] = self.assign_unit(col, unit)
             elif not self.has_same_unit(series, unit):
-                self.df[col] = self.convert_unit(col, unit)
+                df[col] = self.convert_unit(col, unit)
+            elif self.has_units(series) and self.has_same_unit(series, unit):
+                df[col] = series
+
+        return df
+
+    def check_df_units(self, workflow):
+
+        cols = list(self.units[workflow])
+        self.df[cols] = self.get_df_units(workflow)
+
 
 
 class LoadData(UnitsMngr):
     def __init__(self, data_path_yaml='../data_info.yaml'):
         self.df = pd.DataFrame()
 
+        # load the following from yaml
         self.units = {}
         self.data_path = ''
         self.set_data_info(data_path_yaml)
@@ -84,16 +97,18 @@ class LoadData(UnitsMngr):
         elif filename.endswith(".xlsx"):
             self.df = pd.read_excel(filename)
 
-        self.check_req_columns(self.required_columns)
+        self.check_req_columns(self.required_columns, in_place=True)
         self.check_df_units('input')
 
-    def check_req_columns(self, required_columns):
+    def check_req_columns(self, required_columns, in_place=True):
         has_cols, rename_cols = self.find_req_column(required_columns)
         if not all(has_cols):
             missing = np.array(list(required_columns))[~has_cols]
             raise ValueError(f'Missing required columns.\nCannot find column {missing}')
         if rename_cols:
-            self.df.rename(columns=rename_cols, inplace=True)
+            return self.df.rename(columns=rename_cols, inplace=in_place)
+        elif not in_place and not rename_cols:
+            return self.df
 
     def find_req_column(self, required_columns):
         # transform required columns into a list with all possible alternative column names
@@ -137,3 +152,85 @@ class LoadData(UnitsMngr):
 
 
         return np.array(has_cols), rename_cols
+
+
+class CalcBiomass:
+    def __init__(self, loaded_data, species_eq='../species_equ.yaml'):
+
+        self.ldata = loaded_data
+
+        self.species_eq = species_eq
+
+    def get_spp_equ(self):
+        return LoadData.load_yaml(self.species_eq)
+
+    def add_equ_column(self):
+        df = self.ldata.df
+        spp_eq = self.get_spp_equ()
+
+        for spp, eq in spp_eq.items():
+            df.loc[df['spp']==spp, 'spp_eq'] = eq['spp_eq']
+            df.loc[df['spp']==spp, 'equ'] = eq['equ']
+
+    def get_clean_df(self, required_columns, units):
+        # make sure there are the required named columns
+        # find correct columns and adjust names if necesary
+        df_req_col = self.ldata.check_req_columns(required_columns, in_place=False)
+        #convert to correct units and only save columns with defined units
+        df = UnitsMngr(df_req_col, units).get_df_units('equ')
+
+        # remove unit data types and drop unit header
+        # units cannot be used in complex equations
+        df = df.pint.dequantify().droplevel(level=1, axis=1)
+        # add species information
+        df[['spp_eq', 'equ']] = self.ldata.df[['spp_eq', 'equ']]
+
+        return df
+
+    def calc_equ(self, equ, component):
+
+        cls = getattr(allometry, equ)
+        df = self.get_clean_df(required_columns=cls.required_columns, units=cls.units)
+
+        cls_inst = cls(df)
+
+        if component == 'total':
+            wt = cls_inst.calc_tot_tree_weight()
+        elif component == 'foliage' or component == 'foliar':
+            wt = cls_inst.calc_foliar_weight()
+        elif 'fuel' in component:
+            wt = cls_inst.calc_avl_canfuel()
+
+        # assign equ units to the output data
+        wt = pd.DataFrame(data=wt, columns=['weight'])
+        wt['weight'] = UnitsMngr(wt, cls_inst.units).assign_unit('weight', cls_inst.units['out']['weight'])
+
+        # convert to desired output units
+        mng_unit = UnitsMngr(wt, self.ldata.units)
+        mng_unit.check_df_units('out')
+
+        return mng_unit.df
+
+    def calc_biomass(self, component):
+
+        equ_used = self.ldata.df.equ.unique().dropna()
+        df = self.ldata.df
+
+        df[component] = np.nan
+        for eq in equ_used:
+            index_eq = df['equ'] == eq
+            df.loc[index_eq, f'{component}_wt'] = self.calc_equ(eq, component)[index_eq]
+
+
+if __name__ == '__main__':
+    data = LoadData()
+    # wt = manage_data.CalcBiomass()
+
+    data.load_data(data.data_path)
+    data.df.rename(columns={'Final DBH/DRC': 'DBH', 'spp': 'Species', 'Species Code': 'spp'}, inplace=True)
+
+    wt = CalcBiomass(data)
+    wt.add_equ_column()
+    wt.calc_biomass(component='foliar')
+
+    wt.calc_biomass('total')

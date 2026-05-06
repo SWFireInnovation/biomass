@@ -1,0 +1,48 @@
+QUAR:
+  name: AZ White Oak
+  equ: OakWoodland_Chojnacky
+  spp_eq: QUERCUS
+QUEM:
+  name: Emory Oak
+  equ: OakWoodland_Chojnacky
+  spp_eq: QUEM
+QURU4:
+  name: Net Leaf Oak
+  equ: OakWoodland_Chojnacky
+  spp_eq: QUERCUS
+QUOB:
+  name: Mexican Blue Oak
+  equ: OakWoodland_Chojnacky
+  spp_eq: QUERCUS
+QUHY:
+  name: Silver Leaf Oak
+  equ: OakWoodland_Chojnacky
+  spp_eq: QUERCUS
+QUGR3:
+  name: Grey Oak
+  equ: OakWoodland_Chojnacky
+  spp_eq: QUERCUS
+PIST3:
+  name: SW White Pine
+  equ: BCtimber_Standish
+  spp_eq: PIMO
+PIPO:
+  name: Ponderosa Pine
+  equ: BCtimber_Standish
+  spp_eq: PIPO
+PILE:
+  name: Chihuahua Pine
+  equ: BCtimber_Standish
+  spp_eq: PIPO
+PIED:
+  name: 2 Needle Pinyon
+  equ: PJ_Grier
+  spp_eq: PIED
+PIDI3:
+  name: Border Pinyon
+  equ: PJ_Grier
+  spp_eq: PIED
+JUDE2:
+  name: Alligator Juniper
+  equ: PJ_Grier
+  spp_eq: JUMO

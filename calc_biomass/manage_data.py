@@ -7,11 +7,30 @@ import yaml
 import pandas as pd
 import pint_pandas
 import pint
+import warnings
+from os.path import dirname
 from calc_biomass import allometry
 
 # unify the units registry so that we can check units
 ureg = pint.UnitRegistry()
 pint_pandas.PintType.ureg = ureg
+
+def _custom_formatwarning(message, category, filename, lineno, file=None, line=None):
+    """
+    Custom format for warning messages. Exclude file paths so that output in reports like Jupyter Notebooks can be
+    shared without disclosing usernames or sensitive file paths.
+
+    Inputs are supplied by :meth:`warnings.warn()`. This format will apply to all warning messages.
+    """
+    # Format the warning message without including the filename
+    return f'{lineno}: {category.__name__}: {message}\n'
+
+warnings.formatwarning = _custom_formatwarning
+
+# new in python 3.12 warnings.warn()
+# Did not seem to work??
+# _warn_skips = (dirname(__file__), )
+# skip_file_prefixes=_warn_skips
 
 
 class UnitsMngr:
@@ -175,7 +194,7 @@ class CalcBiomass:
     def get_clean_df(self, df, required_columns, units):
         # make sure there are the required named columns
         # find correct columns and adjust names if necesary
-        df_req_col = LoadData().check_req_columns(df, required_columns)
+        df_req_col = self.ldata.check_req_columns(df, required_columns)
         #convert to correct units and only save columns with defined units
         df_correct_units = UnitsMngr(df_req_col, units).get_df_units('equ')
 
@@ -204,7 +223,8 @@ class CalcBiomass:
             wt = cls_inst.calc_avl_canfuel()
 
         # assign equ units to the output data (UnitsMngr needs a pd.DataFrame)
-        wt = pd.DataFrame(data=wt, columns=['weight'])
+        # use the index (e.g. 3,5,22,24) from the input data slice
+        wt = pd.DataFrame(data=wt, columns=['weight'], index=data.index)
         wt['weight'] = UnitsMngr(wt, cls_inst.units).assign_unit('weight', cls_inst.units['out']['weight'])
 
         # convert to desired output units

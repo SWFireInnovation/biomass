@@ -42,6 +42,10 @@ PIDI3:
   name: Border Pinyon
   equ: PJ_Grier
   spp_eq: PIED
+PIMO:
+  name: Single Leaf Pinyon
+  equ: PJ_Grier
+  spp_eq: PIED
 JUDE2:
   name: Alligator Juniper
   equ: PJ_Grier

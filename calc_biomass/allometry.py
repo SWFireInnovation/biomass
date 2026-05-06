@@ -399,26 +399,15 @@ class BCtimber_Standish:
                 'PICO':[- 4.349504, 1.822760, 1.108120],
                 'ABLA':[- 4.291919, 1.872930, 0.998274], # all "balsam" species the same
                 'PIEN':[- 4.294193, 1.858590, 1.007790], # all spruce species the same
-                #- 4.300522 1.857800 1.022250 % substitute wbp for limber
-                #'PIPU':[- 4.294193, 1.858590, 1.007790], # %all spruce species the same
                 'PIPO':[-4.482485, 1.954430, 1.01677],
                 'PSME':[-4.383102, 1.742940, 1.15641],
-                # NaN NaN NaN %JUSC
-                #-4.300522 1.857800 1.022250 %substitute wbp for bristlecone
-                #'ABCO':[-4.291919, 1.872930, 0.998274], # %all "balsam" species the same
                 'POTR15':[-4.648431, 1.735180, 1.356010], # %all cottonwood species the same
                 'ABGR':[-4.291919, 1.872930, 0.998274], # %all "balsam" species the same.
                 'LAOC':[-4.350486, 1.723600, 1.135270],
-                #'PIAL':[-4.300522, 1.857800, 1.022250],
                 'TSHE':[-4.394633, 1.942900, 0.990275],
                 'THPL':[-4.178431, 1.759950, 1.019080],
                 'BEPA':[-4.443142, 1.909560, 1.052050],
                 'PIMO3':[-4.300522, 1.857800, 1.022250],
-                #'LALY':[-4.350486, 1.723600, 1.135270],
-                #NaN NaN NaN %JUOC
-                #'POBAT':[-4.648431, 1.735180, 1.356010], # %all cottonwood species the same
-                #'PODE':[-4.648431, 1.735180, 1.356010], # %all cottonwood species the same
-                # NaN NaN NaN %TABR
                 'TSME':[-4.394633, 1.942900, 0.990275] #; %TSHE substituted for TSME
                 }
 
@@ -435,26 +424,15 @@ class BCtimber_Standish:
                 'PICO':[-12.9, 139.5, 3619.7, 0, 0, 0, 0, 0,],
                 'ABLA':[47.8, - 106, 8040.9, 0, 0, 0, 0, -1093.6],
                 'PIEN':[17.6, 415.9, 611.5, 0, 0, 0, 0, 0],
-                #NaN NaN NaN NaN NaN NaN NaN NaN % PIFL
-                #17.6 415.9 611.5 0 0 0 0 0 % PIEN substituted for PIPU
                 'PIPO':[23.9, 733.1, -851.9, 0, 0, 0, 0, 0],
                 'PSME':[-28.5, -242.4, 5800.3, 0, 4.1, 0, 0, 0],
-                #NaN NaN NaN NaN NaN NaN NaN NaN %JUSC
-                #NaN NaN NaN NaN NaN NaN NaN NaN %PIAR
-                #-1.7 270.9 1658.3 0 0 0 0 0 %ABGR substituted for ABCO
                 'POTR15':[2, 460.9, 695.6, 0, 0, 0, 0, 0],# %Populus trichocarpa substituted for POAN
                 'ABGR':[-1.7, 270.9, 1658.3, 0, 0, 0, 0, 0],
                 'LAOC':[-24, 1395, 0, -23.8, 0, 0, 0, 0],
-                #NaN NaN NaN NaN NaN NaN NaN NaN %PIAL
                 'TSHE':[-17, 756.3, 0, 0, 0, 0.7, -518.7, 0],
                 'THPL':[13.3, 320.3, 539, 0, 0, 0, 0, 0],
                 'BEPA':[-6.5, 755.3, 348.7, 0, 0, 0, 0, 0],
                 'PIMO3':[-10.3, 334.2, 1628.2, 0, 0, 0, 0, 0],
-                #NaN NaN NaN NaN NaN NaN NaN NaN %LALY
-                #NaN NaN NaN NaN NaN NaN NaN NaN %JUOC
-                #2 460.9 695.6 0 0 0 0 0 %Populus trichocarpa substituted for Populus deltoides
-                #2 460.9 695.6 0 0 0 0 0 %Populus trichocarpa substituted for Populus balsamifera
-                #NaN NaN NaN NaN NaN NaN NaN NaN %TABR
                 'TSME':[11.5, 642.2, 0, 0, -5.9, 464.1, 0, 0]
                 }
 
@@ -471,26 +449,15 @@ class BCtimber_Standish:
                 'PICO':[-1.3, -41.5, 569.2, 0, 0, 0, 0, 0],
                 'ABLA':[15.2, -175.1, 2614.1, 0, 0, 0, 0, -332.6],
                 'PIEN':[7.2, -18.4, 348.5, 0, 0, 0, 0, 0],
-                #NaN NaN NaN NaN NaN NaN NaN NaN %PIFL
-                #7.2 -18.4 348.5 0 0 0 0 0       %PIEN substituted for PIPU
                 'PIPO':[0.2, -18.9, 392.9, 0, 0, 0, 0, 0],
                 'PSME':[-3.4, -79.5, 860.0, 0, -0.6, 0, 0, 0],
-                #NaN NaN NaN NaN NaN NaN NaN NaN %JUSC
-                #NaN NaN NaN NaN NaN NaN NaN NaN %PIAR
-                #-2.9 -37 757.4 0 0 0 0 0        %ABGR substituted for ABCO
                 'POTR15':[0.2, -0.4, 156.6, 0, 0, 0, 0, 0],#        %Populus trichocarpa substituted for POAN
                 'ABGR':[-2.9, -37, 757.4, 0, 0, 0, 0, 0],
                 'LAOC':[-0.3, 55.9, 0, -1.4, 0, 0, 0, 0],
-                #NaN NaN NaN NaN NaN NaN NaN NaN %PIAL
                 'TSHE':[2.7, 43.3, 0, 0, 0, 2.6, -220.9, 0],
                 'THPL':[-4, -42.4, 554.6, 0, 0, 0, 0, 0],
                 'BEPA':[1, 6.9, 119.3, 0, 0, 0, 0, 0],
                 'PIMO3':[-1, 36.9, 575.3, 0, 0, 0, 0, 0],
-                #NaN NaN NaN NaN NaN NaN NaN NaN %LALY
-                #NaN NaN NaN NaN NaN NaN NaN NaN %JUSC
-                #0.2 -0.4 156.6 0 0 0 0 0        %Populus trichocarpa substituted for POBA
-                #0.2 -0.4 156.6 0 0 0 0 0        %Populus trichocarpa substituted for PODE
-                #NaN NaN NaN NaN NaN NaN NaN NaN % TABR
                 'TSME':[1.8, 57.1, 0, 0, -19.3, 914.5, 0, 0]
                 }
 
@@ -507,26 +474,15 @@ class BCtimber_Standish:
                 'PICO':[-0.7, -9.3, 153.7, 0, 0, 0, 0, 0],
                 'ABLA':[5.4, -99.5, 1457.5, 0, 0, 0, 0, -165.4],
                 'PIEN':[0.2, -23.6, 317.3, 0, 0, 0, 0, 0],
-                #NaN NaN NaN NaN NaN NaN NaN NaN % PIFL
-                #0.2 - 23.6 317.3 0 0 0 0 0 % PIEN substituted for PIPU
                 'PIPO':[0.3, -0.5, 5.8, 0, 0, 0, 0, 0],
                 'PSME':[-0.3, -99.1, 628.9, 0, 4.3, 0, 0, 0],
-                #NaN NaN NaN NaN NaN NaN NaN NaN %JUSC
-                #NaN NaN NaN NaN NaN NaN NaN NaN %PIAR
-                #0.2 -10.3 193.5 0 0 0 0 0 %ABGR substituted for ABCO
                 'POTR15':[-0.1, -7.6, 80.3, 0, 0, 0, 0, 0],# %Populus trichocarpa substituted for POAN
                 'ABGR':[0.2, -10.3, 193.5, 0, 0, 0, 0, 0],
                 'LAOC':[-1.3, 76.3, 0, -1.9, 0, 0, 0, 0],
-                #NaN NaN NaN NaN NaN NaN NaN NaN %PIAL
                 'TSHE':[-0.1, 33.1, 0, 0, 0, 1.4, -137.5, 0],
                 'THPL':[0.7, -12.2, 130.1, 0, 0, 0, 0, 0],
                 'BEPA':[0.4, 23.4, -3, 0, 0, 0, 0, 0],
                 'PIMO3':[-0.5, 6.7, 61.7, 0, 0, 0, 0, 0],
-                #NaN NaN NaN NaN NaN NaN NaN NaN %LALY
-                #NaN NaN NaN NaN NaN NaN NaN NaN %JUOC
-                #-0.1 -7.6 80.3 0 0 0 0 0 %Populus trichocarpa substituted for POBA
-                #-0.1 -7.6 80.3 0 0 0 0 0 %Populus trichocarpa substituted for PODE
-                #NaN NaN NaN NaN NaN NaN NaN NaN %TABR
                 'TSME':[0.6, -4.3, 0, 0, -7.7, 561.7, 0, 0]
                 }
 

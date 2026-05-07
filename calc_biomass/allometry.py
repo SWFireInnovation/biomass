@@ -34,6 +34,8 @@ class OakWoodland_Chojnacky:
 
     Diameter at Root Collar (DRC) required for all equations.
 
+    Input pd.DataFrame must be unit aware using `pint_pandas`.
+
     Chojnakcy, D.C. 1992 . Estimating volume and biomass for dryland oak speices. In: Ffolliott P.F., Gottfried, G.J.,
     Bennett, D.A., Hernandez, C.V.-M., Ortega-Rubio, A., and R.H. Hamre, technical coordinators. Ecology and management
     of oak and associated woodlands: perspectives in the southwestern United States and Northern Mexico. Proceedings
@@ -137,7 +139,7 @@ class OakWoodland_Chojnacky:
 
     def _eq_wght_crwn(self, wght_bd, coefs):
         B0, B1, B2 = coefs
-        return 10**(B0 + B1*np.log10(wght_bd) + B2*self.trees['HT'])
+        return 10**(B0 + B1*np.log10(wght_bd) + B2*self.trees['HT'].to_numpy())
 
     def eq_WEIGHT_foliage(self, wght_bd):
         """
@@ -201,6 +203,8 @@ class PJ_Grier:
     Flagstaff.Sample sizes of destructive sampling were small (<=15).
 
     Diameter at Root Collar (DRC) is required for all equations.
+
+    Input pd.DataFrame must be unit aware using `pint_pandas`.
 
     To get accurate estimates of the canopy fuel available to the moving front of a crown fire, an additional
     coefficient is used to adjust the branchwood weight to represent 1/2 of the 1 hour fuels following the style of
@@ -318,6 +322,8 @@ class BCtimber_Standish:
 
     Requires DBH, height, and volume as inputs. Volume equations are included in this class and are taken from the BC
     Ministry of Forestry volume tables.
+
+    Input pd.DataFrame must be unit aware using `pint_pandas`.
 
     Standish, J.T., Manning, G.H., and Demaerschalk, J.P. 1985. Development of biomass equations for British Columbia
     tree species. Canadian Forestry Service, Pacific Forest Research Centre, Information Report BC-X-264 (Vancouver, BC)

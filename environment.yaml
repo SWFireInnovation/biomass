@@ -1,0 +1,15 @@
+name: calc_biomass
+channels:
+  - https://repo.prefix.dev/conda-forge
+  - conda-forge
+dependencies:
+  - python=3.14
+  - pandas
+  - openpyxl
+  - pint
+  - pint-pandas
+  # for using th ./labs files
+  - jupyterlab
+  - matplotlib
+  - nodejs
+  - ipympl

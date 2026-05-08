@@ -8,7 +8,7 @@ import pandas as pd
 import pint_pandas
 import pint
 import warnings
-from os.path import dirname
+from pathlib import Path
 from calc_biomass import allometry
 
 # unify the units registry so that we can check units
@@ -169,8 +169,19 @@ class LoadData(UnitsMngr):
             else:
                 has_cols.append(False)
 
-
         return np.array(has_cols), rename_cols
+
+    def export_csv(self, df=None, filename=None):
+        if filename is not None:
+            fpth = Path(self.data_path)
+            file = f'{fpth.stem}_biomass.csv'
+            filename = fpth.parent.joinpath(file)
+
+        if df is None:
+            df = self.df
+
+        dfout = df.pint.dequantify()
+        dfout.to_csv(filename, index=False)
 
 
 class CalcBiomass:

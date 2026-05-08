@@ -58,6 +58,43 @@ class OakWoodland_Chojnacky:
     def __init__(self, trees):
         self.trees = trees.fillna(0)
 
+    def correct_negative_vol(self, vol_bd):
+        neg_vol = vol_bd < 0
+        # 5th percentile of DRC for species in original study was 8 -12 cm.
+        # 7.5 was taken from visual assessment of where the equ could reasonably produce a negative number
+        neg_dbh = self.trees['DBH'] < 7.5
+        # also taken from visual assessment
+        neg_ht = self.trees['HT'] < 4
+
+        neg_eq = neg_vol & neg_dbh & neg_ht
+
+        vol_bd[neg_eq] = self.eq_VOLUME_cylinder(neg_vol)
+
+        # if there is a negative volume with a large dbh or a large height, the data probably wasn't entered correctly
+        error = neg_vol & ~(neg_dbh & neg_ht)
+        if error.any():
+            raise ValueError(f'Negative tree volume!\n{self.trees[error]}')
+
+    def eq_VOLUME_cylinder(self, neg_vol):
+        """
+        Calculate the volume of a cylinder.
+
+        For very small trees (<7.5 cm DRC, <4 m HT) :meth:`eq_VOLUME_branchdiam` yields negative numbers. In these
+        instances, a simple volume of a cylinder is applied using height and dbh.
+
+        Outputs are in dm3 (liters)
+
+        :param neg_vol: a boolean index used to slice `self.trees`
+        :return: a pd.Series of tree volume in liters calculated as a cylinder for the slice `neg_vol`.
+        """
+        neg_t = self.trees[neg_vol]
+        dbh_m = self.trees.loc[neg_t, 'DBH']/100
+        a_m2 = np.pi * (dbh_m/2)**2
+        v_m3 = a_m2 * self.trees.loc[neg_t, 'HT']
+
+        # convert m3 to liters. There are 1000 liters in a cubic meter
+        return v_m3 * 1000
+
     def eq_VOLUME_branchdiam(self):
         """
         Equation to calculate total tree volume of branches greater than 3.8 cm.
@@ -89,6 +126,8 @@ class OakWoodland_Chojnacky:
 
         vol_bd[equ1] = B0 + B1*X[equ1] + B2*X[equ1]**2
         vol_bd[equ2] = B0 + B1*X[equ2] + B2*(3*X0**2 - 2*X0**3/X[equ2])
+
+        self.correct_negative_vol(vol_bd)
 
         return vol_bd
 
@@ -123,16 +162,7 @@ class OakWoodland_Chojnacky:
                   # generic average of oak species
                   'QUERCUS': [0.59, Dh20],
                   }
-        '''
-        # empty list of weights
-        wght_bd = [0] * len(vol_bd)
 
-        for spp, sg in spp_sg.items():
-            this_spp = self.trees['spp'] == spp
-            wght_bd[this_spp] = vol_bd[this_spp] * sg * Dh20
-
-        return wght_bd
-        '''
         # slicing by species requires a species column!
         spp_vol_bd = pd.DataFrame({'spp_eq':self.trees['spp_eq'], 'vol_bd':vol_bd})
         return _vect_by_spp(spp_vol_bd, spp_sg, self._eq_WEIGHT_branchdiam)

@@ -68,7 +68,7 @@ class OakWoodland_Chojnacky:
 
         neg_eq = neg_vol & neg_dbh & neg_ht
 
-        vol_bd[neg_eq] = self.eq_VOLUME_cylinder(neg_vol)
+        vol_bd[neg_eq] = self.eq_VOLUME_cylinder(neg_eq)
 
         # if there is a negative volume with a large dbh or a large height, the data probably wasn't entered correctly
         error = neg_vol & ~(neg_dbh & neg_ht)
@@ -88,9 +88,9 @@ class OakWoodland_Chojnacky:
         :return: a pd.Series of tree volume in liters calculated as a cylinder for the slice `neg_vol`.
         """
         neg_t = self.trees[neg_vol]
-        dbh_m = self.trees.loc[neg_t, 'DBH']/100
+        dbh_m = neg_t['DBH']/100
         a_m2 = np.pi * (dbh_m/2)**2
-        v_m3 = a_m2 * self.trees.loc[neg_t, 'HT']
+        v_m3 = a_m2 * neg_t['HT']
 
         # convert m3 to liters. There are 1000 liters in a cubic meter
         return v_m3 * 1000

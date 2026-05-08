@@ -25,7 +25,7 @@ QUGR3:
 PIST3:
   name: SW White Pine
   equ: BCtimber_Standish
-  spp_eq: PIMO
+  spp_eq: PIMO3
 PIPO:
   name: Ponderosa Pine
   equ: BCtimber_Standish

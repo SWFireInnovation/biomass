@@ -4,6 +4,9 @@ __version__ = "0.0"
 
 import numpy as np
 import pandas as pd
+from pint import UnitRegistry
+
+ureg = UnitRegistry()
 
 def _vect_by_spp(trees, spp_coef, equ):
     """
@@ -25,6 +28,27 @@ def _vect_by_spp(trees, spp_coef, equ):
         out[this_spp] = equ(trees[this_spp], coef)
 
     return out
+
+def eq_VOLUME_cylinder(trees, units):
+    """
+    Calculate the volume of a cylinder.
+
+    Outputs are in m3
+
+    :param trees: a pd.DataFrame from a class's `self.trees'
+    :return: a pd.Series of tree volume in liters calculated as a cylinder for the slice `neg_vol`.
+    """
+
+    ht = trees['HT'].to_numpy() * eval(f'ureg.{units["HT"]}')
+    ht_m = ht.to('m')
+
+    dbh = trees['DBH'].to_numpy() * eval(f'ureg.{units["DBH"]}')
+    dbh_m = dbh.to('m')
+
+    a_m2 = np.pi * (dbh_m/2)**2
+    v_m3 = a_m2 * ht_m
+
+    return v_m3.magnitude
 
 class OakWoodland_Chojnacky:
     """
@@ -59,6 +83,13 @@ class OakWoodland_Chojnacky:
         self.trees = trees.fillna(0)
 
     def correct_negative_vol(self, vol_bd):
+        """
+        For very small trees (<7.5 cm DRC, <4 m HT) :meth:`eq_VOLUME_branchdiam` yields negative numbers. In these
+        instances, a simple volume of a cylinder is applied using height and dbh.
+
+        :param vol_bd: list of volume in liters
+        :return: list of volume in liters
+        """
         neg_vol = vol_bd < 0
         # 5th percentile of DRC for species in original study was 8 -12 cm.
         # 7.5 was taken from visual assessment of where the equ could reasonably produce a negative number
@@ -68,32 +99,15 @@ class OakWoodland_Chojnacky:
 
         neg_eq = neg_vol & neg_dbh & neg_ht
 
-        vol_bd[neg_eq] = self.eq_VOLUME_cylinder(neg_eq)
+        # output is in m3, convert to liters (dm3)
+        vol_bd[neg_eq] = eq_VOLUME_cylinder(self.trees[neg_eq], self.units['equ'])*1000
 
         # if there is a negative volume with a large dbh or a large height, the data probably wasn't entered correctly
         error = neg_vol & ~(neg_dbh & neg_ht)
         if error.any():
             raise ValueError(f'Negative tree volume!\n{self.trees[error]}')
-
-    def eq_VOLUME_cylinder(self, neg_vol):
-        """
-        Calculate the volume of a cylinder.
-
-        For very small trees (<7.5 cm DRC, <4 m HT) :meth:`eq_VOLUME_branchdiam` yields negative numbers. In these
-        instances, a simple volume of a cylinder is applied using height and dbh.
-
-        Outputs are in dm3 (liters)
-
-        :param neg_vol: a boolean index used to slice `self.trees`
-        :return: a pd.Series of tree volume in liters calculated as a cylinder for the slice `neg_vol`.
-        """
-        neg_t = self.trees[neg_vol]
-        dbh_m = neg_t['DBH']/100
-        a_m2 = np.pi * (dbh_m/2)**2
-        v_m3 = a_m2 * neg_t['HT']
-
-        # convert m3 to liters. There are 1000 liters in a cubic meter
-        return v_m3 * 1000
+        else:
+            return vol_bd
 
     def eq_VOLUME_branchdiam(self):
         """
@@ -127,9 +141,7 @@ class OakWoodland_Chojnacky:
         vol_bd[equ1] = B0 + B1*X[equ1] + B2*X[equ1]**2
         vol_bd[equ2] = B0 + B1*X[equ2] + B2*(3*X0**2 - 2*X0**3/X[equ2])
 
-        self.correct_negative_vol(vol_bd)
-
-        return vol_bd
+        return self.correct_negative_vol(vol_bd)
 
     @staticmethod
     def _eq_WEIGHT_branchdiam(volbd, coef):
@@ -377,6 +389,32 @@ class BCtimber_Standish:
 
         self.vol = None
 
+    def correct_vol(self, vol):
+        """
+        Correct for disproportionate volumes that will lead to negative biomass.
+
+        It was found that dead snags ("candle sticks") can have negative biomass. This occurs because the multiple
+        regression model can combine a term for volume with a term for something like diameter squared. If the tree is
+        very short, but very thick (i.e. broken topped snag), the volume equation underestimates and cannot balance the
+        diameter term. This is assumed to be a snag, where a cylinder is a more appropriate approximation of volume.
+
+        :param vol: a pd.Series of tree volumes calculated by :meth:`BCtimber_Standish.calc_vol()`.
+        :return:
+        """
+
+        stubby = (self.trees['HT'] / self.trees['DBH']) < 8
+
+        cyl = eq_VOLUME_cylinder(self.trees, self.units['equ'])
+        undervol = (vol/cyl) < 0.365
+
+        short = self.trees['HT'] < 4
+
+        broken_snag = stubby & short & undervol
+
+        vol[broken_snag] = cyl[broken_snag]
+
+        return vol
+
     def equ_weight(self, tr, coef):
         """
         Equation for tree biomass. For any given species, a maximum of 3 terms are used. Coefficients are 0 for any
@@ -447,7 +485,9 @@ class BCtimber_Standish:
                 'TSME':[-4.394633, 1.942900, 0.990275] #; %TSHE substituted for TSME
                 }
 
-        return _vect_by_spp(self.trees, coef, self.equ_vol)
+        vol = _vect_by_spp(self.trees, coef, self.equ_vol)
+        return self.correct_vol(vol)
+
 
     def set_vol(self):
         """

@@ -1,3 +1,5 @@
+# conda env create -f environment.yaml
+# conda activate calc_biomass
 name: calc_biomass
 channels:
   - https://repo.prefix.dev/conda-forge
@@ -8,7 +10,7 @@ dependencies:
   - openpyxl
   - pint
   - pint-pandas
-  # for using th ./labs files
+  # below for using th ./labs files
   - jupyterlab
   - matplotlib
   - nodejs

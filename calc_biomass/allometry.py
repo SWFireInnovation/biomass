@@ -578,3 +578,97 @@ class BCtimber_Standish:
         wght_fol = self.calc_foliar_weight()
 
         return wght_br/2 + wght_fol
+
+
+class Mesquite_McClaren:
+    """
+    This class contains biomass equations developed for velvet mesquite trees (Prosopis velutina) in southern AZ,
+    south of Tucson. The sample size is small, but coefficient b=2.19 in the equation ln(y) = a+b*lnX where X is total
+    biomass is within the range of similar findings for other mesquite species where b ranged from 2.1-2.37
+    (Alvarez et al., 2011; Northup et al. 2005; Padron and Navarro, 2004). Navar et al. 2019 also found that this
+    equation was within the lower range of data of the 510 samples in Navar et al. 2019.
+
+    It is also important to note that the "fine stem" category of branchwood is 0-1cm. The standard "available canopy
+    fuel" is foliage + 0.5* 1hr's. 1hr's are 0-6 mm, so the fine stem category will over-estimate canopy fuel.
+
+    Diameter at Root Collar (DRC) required for all equations.
+
+    Input pd.DataFrame must be unit aware using `pint_pandas`.
+
+    McClaran, M.P., McMurtry, C.R., Archer, S.R.. 2013. A tool for estimating impacts of woody encroachment in arid
+    grasslands: Allometric equations for biomass, carbon and nitrogen content in Posopis veluntina. Journal of Arid
+    Environnments 88(2013): 39-12
+    """
+    units = {'equ':{'DBH': 'cm'},
+            'out':{'weight': 'kg'}
+            }
+    required_columns = {'DBH': {'alternate': ['drc'],
+                                'exclude': ['circumfrence', 'circumference']}
+                        }
+
+    def __init__(self, trees):
+        self.trees = trees
+
+    @staticmethod
+    def eq_weight(DRC, coef):
+        """
+        Logarithmic equation (natural) used to calculate species component weights.
+
+        Returns weight in Kg.
+
+        :param DRC: pd.DataFrame with a column labeled 'DBH' containing DRC's.
+        :param coef: list of a and b coefficients for equation.
+        :return: list of weight in Kg.
+        """
+        a, b, CF = coef
+        return np.e ** (CF * (a + b * np.log(DRC['DBH'])))
+
+    def calc_tot_tree_weight(self):
+        """
+        Calculate total tree weight in Kg.
+
+        :return: list of total tree weight in Kg.
+        """
+
+        coef = {"PRVE": [-3.02, 2.19, 1.06]}
+
+        return _vect_by_spp(self.trees, coef, self.eq_weight)
+
+    def calc_foliar_weight(self):
+        """
+        Calculate foliar weight in Kg.
+
+        :return: list of foliar weight in Kg.
+        """
+        coef = {"PRVE": [-4.88, 1.67, 1.02]}
+
+        return _vect_by_spp(self.trees, coef, self.eq_weight)
+        # self._calc_spp_weight(coef))
+
+    def calc_1hr_weight(self):
+        """
+        Calculate the estimated weight of branches in 1hr size class.
+
+        It is important to note that the "fine stem" category of branchwood is 0-1cm. 1 hr fuel classes are 0-6mm, so
+        the fine stem category will over-estimate canopy fuel.
+
+        :return: list of weight in Kg.
+        """
+        coef = {"PRVE": [-3.15, 1.52, 1.01]}
+
+        return _vect_by_spp(self.trees, coef, self.eq_weight)
+
+    def calc_avl_canfuel(self):
+        """
+        Calculate the weight of canopy fuel available to the flaming front of a crown fire in Kg (foliage + 0.5*1hr fuel).
+
+        .. Warning::
+            Branch biomass includes all branches up to 1 cm. This equation over-estimates canopy fuel.
+
+        :return: list of available canopy fuel in Kg.
+        """
+
+        wght_fol = self.calc_foliar_weight()
+        wght_br = self.calc_1hr_weight()
+
+        return wght_br/2 + wght_fol

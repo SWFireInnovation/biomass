@@ -50,3 +50,7 @@ JUDE2:
   name: Alligator Juniper
   equ: PJ_Grier
   spp_eq: JUMO
+PRVE:
+  name: Velvet Mesquite
+  equ: Mesquite_McClaren
+  spp_eq: PRVE

@@ -283,15 +283,6 @@ class PJ_Grier:
         a, b, frac = coef
         return frac * 10**(a + b * np.log10(DRC['DBH']))
 
-    def _calc_spp_weight(self, spp_coef):
-        wght = np.zeros(len(self.trees))
-
-        for spp, coef in spp_coef.items():
-            this_spp = self.trees['spp'] == spp
-            wght[this_spp] = self.eq_weight(self.trees.loc[this_spp, 'DBH'], coef)
-
-        return wght
-
     def calc_tot_tree_weight(self):
         """
         Calculate total tree weight in Kg.

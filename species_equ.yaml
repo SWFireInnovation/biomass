@@ -24,16 +24,16 @@ QUGR3:
   spp_eq: QUERCUS
 PIST3:
   name: SW White Pine
-  equ: BCtimber_Standish
-  spp_eq: PIMO3
+  equ: MEXpines_VargasLarreta
+  spp_eq: PIST3
 PIPO:
   name: Ponderosa Pine
   equ: BCtimber_Standish
   spp_eq: PIPO
 PILE:
   name: Chihuahua Pine
-  equ: BCtimber_Standish
-  spp_eq: PIPO
+  equ: MEXpines_VargasLarreta
+  spp_eq: PILE
 PIED:
   name: 2 Needle Pinyon
   equ: PJ_Grier
@@ -48,6 +48,10 @@ PIMO:
   spp_eq: PIED
 JUDE2:
   name: Alligator Juniper
+  equ: PJ_Grier
+  spp_eq: JUMO
+JUAR3:
+  name: Rocky Mountain Red Berry Juniper
   equ: PJ_Grier
   spp_eq: JUMO
 PRVE:

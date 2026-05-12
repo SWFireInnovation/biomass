@@ -634,7 +634,6 @@ class Mesquite_McClaren:
         coef = {"PRVE": [-4.88, 1.67, 1.02]}
 
         return _vect_by_spp(self.trees, coef, self.eq_weight)
-        # self._calc_spp_weight(coef))
 
     def calc_1hr_weight(self):
         """
@@ -663,3 +662,139 @@ class Mesquite_McClaren:
         wght_br = self.calc_1hr_weight()
 
         return wght_br/2 + wght_fol
+
+class MEXpines_VargasLarreta:
+    """
+        This class contains biomass equations developed for pine and oak forests of the Sierra Madre Occidental in
+        Durango Mexico. It contains a number of pine and oak species which do not exist in the US, but contains large
+        samples (84-98 trees) of Chihuahua (Pinus leiophylla), Apache (Pinus engelmannii), and Southwestern White
+        (Pinus strubiformus) pines. It also contains an equation for alligator juniper, but the equation requires
+        DBH to be recorded instead of DRC.
+
+        A key benefit of this paper is its separation of the biomass into components and the use of additive equations,
+        where the sum of all the individual equations represents the total.
+
+        It is also important to note that branchwood size is not defined for this paper. As a result, it is not
+        included in canopy fuel estimations. This will **under-estimate** canopy fuels.
+
+        Diameter at Breast Height (DBH) required for all equations.
+
+        Input pd.DataFrame must be unit aware using `pint_pandas`.
+
+        Vargas-Larreta, B., Lopez-Sanches, C.A., Corral-Rivas, J.J., Lopez-Martinez, J.O., Aguierre-Calderon, C.G., and
+        Alvarez-Gonzalez, J.G. 2017. Allometric equations for estimating biomass adn carbon stocks in the temperate
+        forests of north-western Mexico. Forests 2017; 8(8): 269. https://doi.org/10.3390/f8080269
+        """
+    units = {'equ': {'DBH': 'cm',
+                     'HT':'m'},
+             'out': {'weight': 'kg'}
+             }
+    required_columns = {'DBH': {'alternate': ['drc'],
+                                'exclude': ['circumfrence', 'circumference']},
+                         'HT': {'alternate': ['height'],
+                                'exclude': ['canopy', 'base', 'lowest']}
+                        }
+
+    def __init__(self, trees):
+        self.trees = trees
+
+    @staticmethod
+    def eq_weight(trees, coef):
+        """
+        Exponential equation used to calculate species component weights.
+
+        Returns weight in Kg.
+
+        Where DBH is squared, beta == 2.
+
+        Where HT is excluded, gamma == 0.
+
+        Where HT has no gamma term, gamma == 1.
+
+        :param DRC: pd.DataFrame with a column labeled 'DBH' containing tree diameters.
+        :param coef: list of alpha, beta, and gamma coefficients for equation.
+        :return: list of weight in Kg.
+        """
+        alpha, beta, gamma = coef
+        return (alpha * trees['DBH']**beta) * trees['HT']**gamma
+
+    def calc_stem_weight(self):
+        """
+        Calculate stem weight in Kg.
+
+        :return: list of stem weight in Kg.
+        """
+        coef = {"PIEN2": [0.09798, 1.67370, 1.02867],
+                "PILE": [0.015582, 2, 1],
+                "PIST3": [0.00716, 2.02253, 1.30938],
+                "JUDE2": [0.01289, 2, 1]}
+
+        return _vect_by_spp(self.trees, coef, self.eq_weight)
+
+
+
+    def calc_bark_weight(self):
+        """
+        Calculate bark weight in Kg.
+
+        :return: list of bark weight in Kg.
+        """
+        coef = {"PIEN2": [0.037974, 1.11488, 0.88389],
+                "PILE": [0.001074, 2, 1],
+                "PIST3": [0.03088, 1.10021, 1.09925],
+                "JUDE2": [0.000772, 2, 1]}
+
+        return _vect_by_spp(self.trees, coef, self.eq_weight)
+
+    def calc_branch_weight(self):
+        """
+        Calculate branch weight in Kg.
+
+        Diameters included in this weight is undefined.
+
+        :return: list of branch weight in Kg.
+        """
+        coef = {"PIEN2": [1.39092, 1.25795, 0.05199],
+                "PILE": [0.007269, 2, 1],
+                "PIST3": [0.01613, 1.90578, 0.70112],
+                "JUDE2": [0.00204, 2, 1]}
+
+        return _vect_by_spp(self.trees, coef, self.eq_weight)
+
+    def calc_foliar_weight(self):
+        """
+        Calculate foliar weight in Kg.
+
+        :return: list of foliar weight in Kg.
+        """
+        coef = {"PIEN2": [0.069316, 1.24804, 0.34853],
+                "PILE": [0.000343, 2, 1],
+                "PIST3": [0.03886, 1.53515, 0.31776],
+                "JUDE2": [0.00098, 2, 1]}
+
+        return _vect_by_spp(self.trees, coef, self.eq_weight)
+
+    def calc_tot_tree_weight(self):
+        """
+        Calculate total tree weight in Kg.
+
+        :return: list of total tree biomass in Kg.
+        """
+        wt = self.calc_stem_weight()
+        wt += self.calc_bark_weight()
+        wt += self.calc_branch_weight()
+        wt += self.calc_foliar_weight()
+
+        return wt
+
+    def calc_avl_canfuel(self):
+        """
+        Calculate the weight of canopy fuel available to the flaming front of a crown fire in Kg (foliage + 0.5*1hr fuel).
+
+        These equations do not define the size of the branchwood biomass, so they are not included. This will
+        under-estimate available crown fuels.
+
+        :return: list of available canopy fuel in kg.
+        """
+
+        return self.calc_foliar_weight()

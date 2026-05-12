@@ -172,7 +172,7 @@ class LoadData(UnitsMngr):
         return np.array(has_cols), rename_cols
 
     def export_csv(self, df=None, filename=None):
-        if filename is not None:
+        if filename is None:
             fpth = Path(self.data_path)
             file = f'{fpth.stem}_biomass.csv'
             filename = fpth.parent.joinpath(file)
@@ -181,7 +181,7 @@ class LoadData(UnitsMngr):
             df = self.df
 
         dfout = df.pint.dequantify()
-        dfout.to_csv(filename, index=False)
+        dfout.to_csv(filename, index=True)
 
 
 class CalcBiomass:

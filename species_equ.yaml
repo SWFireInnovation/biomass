@@ -58,3 +58,7 @@ PRVE:
   name: Velvet Mesquite
   equ: Mesquite_McClaren
   spp_eq: PRVE
+SEGR10:
+  name: Acacia
+  equ: Mesquite_McClaren
+  spp_eq: PRVE

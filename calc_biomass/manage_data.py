@@ -1,6 +1,6 @@
 __author__ = "Greg Cohn"
 __email__ = "greg.cohn@nau.edu"
-__version__ = "0.0"
+__version__ = "1.0"
 
 import numpy as np
 import yaml

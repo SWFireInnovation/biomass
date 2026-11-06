@@ -1,6 +1,6 @@
 __author__ = "Greg Cohn"
 __email__ = "greg.cohn@nau.edu"
-__version__ = "0.0"
+__version__ = "1.0"
 
 import numpy as np
 import pandas as pd
@@ -254,6 +254,8 @@ class PJ_Grier:
 
     Grier, C.C., Elliott, K.J., McCullough, D.G. 1992. Biomass distribution and productivity of Pinus edulis-Juniperus
     monosperma woodlands of north-central Arizona. Forest Ecology and Management, 50:331-350.
+
+    Lutes, D. 2020. FuelCalc User's Guide (version 1.7). USDA Forest Service, Rocky Mountain Research Station.
     """
     units = {'equ':{'DBH': 'cm'},
             'out':{'weight': 'kg'}

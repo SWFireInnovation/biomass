@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software-code
+title: "canopy biomass"
+abstract: >-
+  Calculate above ground biomass and foliar weights for trees and shrubs of the southwestern
+  United States from standard forestry measurements. Provides units aware calculations of total
+  and foliar biomass for trees and large shrubs from measurements such as height, diameter at
+  breast height, and diameter at root collar, as well as the best estimate of Available
+  Canopy Fuel when available.
+authors:
+  - family-names: Cohn
+    given-names: Greg
+    orcid: "https://orcid.org/0000-0002-3427-6932"
+    affiliation: "Northern Arizona University"
+version: 1.0.0
+date-released: 2026-11-05
+repository-code: "https://github.com/SWFireInnovation/biomass"
+license: MIT
+keywords:
+  - canopy biomass
+  - canopy fuel
+  - foliar biomass
+  - allometry
+  - Southwest Fire Innovation Landscape Network

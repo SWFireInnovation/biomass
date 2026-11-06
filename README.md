@@ -1,4 +1,8 @@
 # biomass
+[![License: MIT](https://shields.io)](https://opensource.org/licenses/MIT)
+![Python](https://img.shields.io/badge/python-3.14-blue.svg)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23992410.svg)](https://doi.org/10.5281/zenodo.23992410)
+
 This package provides unit aware calculations of biomass for tree species and tall shrubs found in the 
 Southwestern United States. The package loads data, searches for columns, defines units, and then calculates 
 species level biomass using allometric equations. The package focuses on allometric equations that can 

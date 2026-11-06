@@ -1,5 +1,5 @@
 # biomass
-[![License: MIT](https://shields.io)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Python](https://img.shields.io/badge/python-3.14-blue.svg)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23992410.svg)](https://doi.org/10.5281/zenodo.23992410)
 

@@ -1,5 +1,4 @@
 # biomass
-https://doi.org/10.5281/zenodo.8475
 This package provides unit aware calculations of biomass for tree species and tall shrubs found in the 
 Southwestern United States. The package loads data, searches for columns, defines units, and then calculates 
 species level biomass using allometric equations. The package focuses on allometric equations that can 

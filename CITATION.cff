@@ -2,6 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software-code
 title: "canopy biomass"
+doi: https://doi.org/10.5281/zenodo.23992410
 abstract: >-
   Calculate above ground biomass and foliar weights for trees and shrubs of the southwestern
   United States from standard forestry measurements. Provides units aware calculations of total

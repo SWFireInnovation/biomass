@@ -17,7 +17,8 @@ Technology Capacity Within an Innovation Landscapes Network
 ```bash
 git clone https://github.com/SWFireInnovation/biomass.git
 ```
-1. create and activate the conda environment
+2. Navigate to the biomass folder
+3. Create and activate the conda environment using the `enironment.yaml` file
 ```bash
 conda create --file enivronment.yaml
 conda activate calc_biomass
@@ -26,17 +27,17 @@ conda activate calc_biomass
 The package is now ready to use.
 
 ## Usage Example
-The labs folder contains many example Jupyter Labs used during the development of the project. Files labeled 
+The `./labs` folder contains many example Jupyter Labs used during the development of the project. Files labeled 
 `*_methods.ipynb` contain the final methods used with this package for specific projects. They are good 
 examples of how to use the package with some basic QC.
 
 Note that this package will return no data for species without an equation. If a species is dominant in an 
 area, but has no equation, it is recommended that an equation for another species be substituted. See 
-Adjusting species_equ.yaml below.
+Adjusting `species_equ.yaml` below.
 
 ### Fill out data_info.yaml
 After installation, the first step is to change the file extension of `data_info.template`, to a `.yaml` file. 
-Next, fill out the fields with the correct file paths and column names for your project:
+Next, fill out the fields with the correct file paths, column names, and units for your project:
 
 ```yaml
 data_path: c:\Users\me\my_tree_data.xlsx
